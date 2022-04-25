@@ -16,9 +16,13 @@ http://wiki.ros.org/canopen_chain_node
 Sustentation tracteur : https://tel.archives-ouvertes.fr/tel-01063386/document
 
 
-activer CAN rpi3 :
+configurer CAN rpi3 :
 sudo nano /boot/firmware/usercfg.txt
 ajouter :
 dtparam=spi=on
 dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
 dtoverlay=spi-bcm2835-overlay
+
+Activer CAN :
+sudo ip link set can0 type can bitrate 500000
+sudo ip link set up can0
