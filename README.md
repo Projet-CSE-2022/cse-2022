@@ -4,50 +4,61 @@ IP donkey car 192.168.1.3
 
 mdp : redsreds
 
-faire donkey_llc
-cf https://github.com/tleyden/donkey-ros
+## Installation
 
-**Contrôle de la donkey car via teleop**
+### Canopen
 
-1. Se connecter en ssh sur la voiture avec la commande "ssh ubuntu@192.168.1.3"
-2. Aller dans le dossier `catkin_ws` et entrer la commande `source /opt/ros/noetic/setup.bash` et `source ./devel/setup.bash` dans chacun des terminaux utilisés
-3.lancer `rosrun i2cpwm_board i2cpwm_board`, `rosrun donkey_llc low_level_control.py` et `rosrun teleop_twist_keyboard teleop_twist_keyboard.py` dans trois terminaux différents.
-4. On peut maintenant contrôler la donkey car avec le clavier en ayant le focus sur le terminal où l'on a lancételeop_twist_keyboard.
-5. Commandes de contrôle:
-    - i tourner
-    - l avancer
-    - j reculer
-    - l avancer
-    - tout arrêter
-    - q augmenter vitesse
-    - z diminuer vitesse
+- `sudo nano /boot/firmware/usercfg.txt` et ajouter les paramètres suivant pour configurer le module can :
 
-**raspberry pi 3 with CAN** 
-https://www.youtube.com/watch?v=fXiOIUZtV10 
-http://wiki.ros.org/ros_canopen
-http://wiki.ros.org/canopen_chain_node
+  - `dtparam=spi=on`
+  - `dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25`
+  - `dtoverlay=spi-bcm2835-overlay`
 
+- `sudo /etc/init.d` 
 
-**Sustentation tracteur** 
-https://tel.archives-ouvertes.fr/tel-01063386/document
+- `sudo touch can.sh` Créer un fichier pour démarrer le canopen au démarrage
 
+- `sudo chmod 777 can.sh`
 
-**configurer CAN rpi3**
-sudo nano /boot/firmware/usercfg.txt
-ajouter :
-dtparam=spi=on
-dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
-dtoverlay=spi-bcm2835-overlay
+- `sudo nano can.sh`
 
-**Activer CAN**
-sudo ip link set can0 type can bitrate 500000
-sudo ip link set up can0
-checker photo
+  ```bash
+  #!/bin/sh
+  ### BEGIN INIT INFO
+  # Provides:          can.sh
+  # Required-Start:    $all
+  # Required-Stop:
+  # Should-Start:
+  # Default-Start:     2 3 4 5
+  # Default-Stop:
+  # X-Interactive:     true
+  # Short-Description: Start can on boot
+  ### END INIT INFO
+  sudo ip link set can0 type can bitrate 500000
+  sudo ip link set up can0
+  ```
 
-**Définition des commandes** 
+- `sudo update-rc.d can.sh default` pour init le fichier au démarrage
 
-|      |      |      |
-| ---- | ---- | ---- |
-|      |      |      |
-|      |      |      |
-|      |      |      |
+- `cd ..`
+
+- `sudo find -iname '*can'` pour voir si le système a créé les fichier `rc2`, `rc3`, `rc4` et `rc5`
+
+### ROS
+
+- `git clone git@github.com:Projet-CSE-2022/cse-2022.git`
+- `cd ~/cse_2022/catkin_ws`
+- `source /opt/ros/noetic/setup.bash`
+- `catkin_make -DCATKIN_WHITELIST_PACKAGES=""` pour compiler tous les packages
+- `source ./devel/setup.bash`
+- `roslaunch launch/all.launch` pour lancer tous les packages
+
+## Contrôles
+
+- i tourner
+- l avancer
+- j reculer
+- l avancer
+- tout arrêter
+- q augmenter vitesse
+- z diminuer vitesse
