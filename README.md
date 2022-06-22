@@ -14,7 +14,7 @@ mdp : redsreds
   - `dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25`
   - `dtoverlay=spi-bcm2835-overlay`
 
-- `sudo /etc/init.d` 
+- `sudo cd /etc/init.d` 
 
 - `sudo touch can.sh` Créer un fichier pour démarrer le canopen au démarrage
 
